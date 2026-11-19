@@ -1,6 +1,7 @@
 export * from './builderUtils';
 export * from './buildResultView';
 export * from './eip6963';
+export * from './evmAmount';
 export * from './formatBalance';
 export * from './getViemChainConfig';
 export * from './importSdk';

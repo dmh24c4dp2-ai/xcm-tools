@@ -4,11 +4,14 @@ import { approveToken, getTokenBalance } from '@paraspell/evm-snowbridge';
 import type { FC } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import type { Chain, WalletClient } from 'viem';
-import { formatUnits, parseUnits } from 'viem';
 import { mainnet } from 'viem/chains';
 
 import { BALANCE_FETCH_DEBOUNCE_MS } from '../../constants';
-import { submitEvmApproveFromApi } from '../../utils';
+import {
+  fromBaseUnits,
+  submitEvmApproveFromApi,
+  toBaseUnits,
+} from '../../utils';
 import {
   showErrorNotification,
   showLoadingNotification,
@@ -21,6 +24,7 @@ type Props = {
   assetId: string;
   amount: string;
   isMax?: boolean;
+  abstractDecimals?: boolean;
   useApi?: boolean;
   getEvmWalletClient: (chain: Chain) => WalletClient | undefined;
 };
@@ -33,6 +37,7 @@ export const EthAssetActions: FC<Props> = ({
   assetId,
   amount,
   isMax,
+  abstractDecimals,
   useApi,
   getEvmWalletClient,
 }) => {
@@ -60,16 +65,11 @@ export const EthAssetActions: FC<Props> = ({
   }, [fetchAllowance, refreshToken]);
 
   const formatAmount = (value: bigint | undefined) =>
-    value === undefined ? '…' : formatUnits(value, decimals);
+    fromBaseUnits(value, decimals, abstractDecimals) ?? '…';
 
-  const parsedAmount = (() => {
-    if (isMax || !amount) return undefined;
-    try {
-      return parseUnits(amount, decimals);
-    } catch {
-      return undefined;
-    }
-  })();
+  const parsedAmount = isMax
+    ? undefined
+    : toBaseUnits(amount, decimals, abstractDecimals);
 
   const needsApproval =
     parsedAmount !== undefined &&

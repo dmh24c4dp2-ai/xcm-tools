@@ -539,6 +539,7 @@ const XcmTransferFormContent: FC<Props> = ({
         assetId={asset.assetId}
         amount={entry.amount}
         isMax={entry.isMax}
+        abstractDecimals={form.values.abstractDecimals}
         useApi={form.values.useApi}
         getEvmWalletClient={getEvmWalletClient}
       />
